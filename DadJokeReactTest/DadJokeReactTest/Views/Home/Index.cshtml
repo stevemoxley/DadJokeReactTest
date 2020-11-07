@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Dad Joke Search Engine</h1>
+    @Html.React("SearchForm", new
+    {
+        searchUrl = Url.Action("search"),
+        saveUrl = Url.Action("save")
+    })
+</div>
+
+@section Scripts{
+    <script src="~/js/SearchForm.jsx"></script>
+}
