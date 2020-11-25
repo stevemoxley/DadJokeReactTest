@@ -2,13 +2,14 @@
 
     constructor(props) {
         super(props);
-        this.state = { searchTerm: '', results: null };
+        this.state = { searchTerm: '', searchTermValidationVisible: 'False', results: null };
         this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleSave = this.handleSave.bind(this);
     }
 
     handleSearchTermChange(e) {
+        this.handleValidationSearchText(e.target.value);
         this.setState({ searchTerm: e.target.value });
     }
 
@@ -29,6 +30,10 @@
     handleSearch(e) {
         e.preventDefault();
 
+        if (!this.handleValidationSearchText(this.state.searchTerm)) {
+            return;
+        }
+
         const xhr = new XMLHttpRequest();
         xhr.open('get', this.props.searchUrl + '?searchTerm=' + this.state.searchTerm, true);
         xhr.onload = () => {
@@ -42,7 +47,8 @@
         return (
             <div>
                 <form className="searchForm" onSubmit={this.handleSearch}>
-                    <input type="text" placeholder="Search Term" value={this.state.searchTerm} onChange={this.handleSearchTermChange} />
+                    <input type="text" placeholder="Search Term" value={this.state.searchTerm} onBlur={this.handleSearchTermChange} onChange={this.handleSearchTermChange} />
+                    <InputTextValidation visible={this.state.searchTermValidationVisible} />
                     <input type="submit" value="Submit" />
                     <input type="button" value="Save" onClick={this.handleSave} />
                 </form>
@@ -52,6 +58,16 @@
                 </div>
             </div>
         );
+    }
+
+    handleValidationSearchText(searchText) {
+        if (searchText.length === 0) {
+            this.setState({ searchTermValidationVisible: 'True' })
+            return false;
+        } else {
+            this.setState({ searchTermValidationVisible: 'False' })
+            return true;
+        }
     }
 }
 
@@ -71,5 +87,22 @@ class SearchResult extends React.Component {
         }
 
         return (<ul>{comments}</ul>);
+    }
+}
+
+class InputTextValidation extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+
+        if (this.props.visible === "True") {
+            return (<div>Please fill out the text box</div>);
+        } else {
+            return (<div></div>);
+        }
+
     }
 }
